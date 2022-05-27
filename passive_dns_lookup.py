@@ -51,15 +51,18 @@ Still a work in progress.
 """
 
     with open(target, 'r') as f:
-        data = f.readlines()
-        get_multi_hosts = dnsdb_request_setup(ip=data)
-        if len(get_multi_hosts) > 4:
-            sleep(10)
-        for x in get_multi_hosts:
-            if x['num_results'] < 100:
-                return f'IP: {target} has a low number of hosts, you may want to block \n'
-    
-            return f'IP: {target} has a large number of hosts, block with caution'
+        for line in f:
+            search_term = line.strip(' \n')
+            
+            get_multi_hosts = dnsdb_request_setup(ip=search_term)
+
+            if get_multi_hosts['num_results'] < 100:
+                print(f'[*] IP: {search_term} has a low number of hosts, you may want to block \n')
+
+                if len(search_term) >= 5:
+                    sleep(20)
+       
+        print(f'[!] IP: {search_term} has a large number of hosts, block with caution')
 
 
 def parse_args():
